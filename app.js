@@ -1,72 +1,47 @@
+
 const express = require('express');
-const mongoose = require('mongoose');
+const path = require('path');
+const fileUpload = require('express-fileupload');
 const app = express();
-const BlogPost = require('./models/BlogPost');
-const ContactPost = require('./models/ContactPost');
 
-mongoose.connect('mongodb://127.0.0.1:27017/my_blog', { useNewUrlParser: true, useUnifiedTopology: true });
+// ======== DATABASE CONNECTION =========
+require('./config/db'); 
 
-app.set('view engine', 'ejs');
+// ======== MIDDLEWARES =========
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.json());
+app.use(fileUpload());
+
+// ======== VIEW ENGINE =========
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// ======== VALIDATION MIDDLEWARE =========
+const validateMiddleware = (req, res, next) => {
+    if (!req.files || !req.files.image || !req.body.title || !req.body.body || !req.body.username) {
+        return res.redirect('/post/new');
+    }
+    next();
+};
+
+// ======== CONTROLLERS =========
+const homeController = require('./src/controllers/listPost');
+const listPostController = require('./src/controllers/listPost');
+const newPostController = require('./src/controllers/newPost');
+const getPostController = require('./src/controllers/getPost');
+const storePostController = require('./src/controllers/storePost');
+
+// ======== ROUTES =========
+app.get('/', homeController);
+app.get('/list', listPostController);         
+app.get('/post/new', newPostController);      
+app.get('/post/:id', getPostController);      
+app.post('/posts/store', validateMiddleware, storePostController); 
 
 
-app.get('/', async (req, res) => {
-    const posts = await BlogPost.find().sort({ createdAt: -1 });
-  res.render('index', { posts });
-});
-
-app.get('/post/:id', async (req, res) => {
-  try {
-    const post = await BlogPost.findById(req.params.id);
-    if (!post) return res.status(404).send("Article introuvable.");
-    res.render('post', { post });
-  } catch (err) {
-    res.status(500).send("Erreur lors du chargement de l'article.");
-  }
-});
-
-app.get('/about', (req, res) => {
-    res.render('about'); // fichier views/index.ejs
-});
-
-app.get('/contact', (req, res) => {
-    res.render('contact'); // fichier views/index.ejs
-});
-
-app.get('/posts/create', (req, res) => {
-  res.render('create'); // views/create.ejs
-});
-
-
-app.get('/post', (req, res) => {
-    res.render('post'); // fichier views/index.ejs
-});
-
-app.post('/contact', async (req, res) => {
-  try {
-    const { name, email, phone, message } = req.body;
-
-    // Création du message de contact
-    await ContactPost.create({ name, email, phone, message });
-
-    res.send('Votre message a été enregistré avec succès !');
-  } catch (err) {
-    console.error('Erreur lors de l\'enregistrement du message :', err);
-    res.status(500).send('Une erreur est survenue.');
-  }
-});
-
-app.post('/posts/store', async (req, res) => {
-  try {
-    const { title, body, username } = req.body;
-    await BlogPost.create({ title, body, username });
-    res.redirect('/'); // ou une page de confirmation
-  } catch (err) {
-    res.status(500).send("Erreur lors de la création de l'article.");
-  }
-});
-
-app.listen(3000, () => {
-    console.log("Serveur démarré sur http://localhost:3000");
+// ======== SERVEUR =========
+const PORT = 4000;
+app.listen(PORT, () => {
+    console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
 });
