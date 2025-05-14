@@ -1,14 +1,14 @@
 const path = require('path');
 const BlogPost = require('../models/BlogPost');
+const User = require('../models/User');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const image = req.files?.image;
     if (!req?.session?.user) {
         req.flash('error', 'Vous devez être connecté pour pouvoir créer un article')
         return res.redirect('/login')
     }
-    const user = req.session.user
-
+    const user = await User.findById(req.session.user.id).exec()
     if (!image) {
         req.flash('error', 'Aucune image sélectionnée.');
         return res.redirect('/post/new');
@@ -24,11 +24,10 @@ module.exports = (req, res) => {
         }
 
         try {
-            console.log("creating post by user ", user)
+            console.log("creating post by user ", user.name)
             await BlogPost.create({
                 ...req.body,
-                username: user.name,
-                userId: user.id,
+                userId: user._id,
                 image: '/assets/img/' + image.name
             });
 

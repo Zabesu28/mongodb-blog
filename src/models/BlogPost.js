@@ -1,10 +1,11 @@
+const { Types } = require('mongoose');
 const mongoose = require('../../config/db');
 const Schema = mongoose.Schema;
 
 const BlogPostSchema = new Schema({
     title: String,
     body: String,
-    userId: String,
+    userId: Types.ObjectId,
     datePosted: {
         type: Date,
         default: new Date()
