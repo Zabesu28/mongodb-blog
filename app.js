@@ -1,4 +1,5 @@
-
+const { config } = require('dotenv');
+config();
 const express = require('express');
 const path = require('path');
 const fileUpload = require('express-fileupload');
@@ -62,7 +63,7 @@ app.use((req, res) => {
 });
 
 //  SERVEUR 
-const PORT = 4000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
 });
