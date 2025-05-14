@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const fileUpload = require('express-fileupload');
 const app = express();
+const flash = require('connect-flash');
+const session = require('express-session');
 
 // ======== DATABASE CONNECTION =========
 require('./config/db'); 
@@ -12,6 +14,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
+app.use(session({
+  secret: 'tonsecret',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success');
+  res.locals.error_msg = req.flash('error');
+  next();
+});
 
 // ======== VIEW ENGINE =========
 app.set('view engine', 'ejs');

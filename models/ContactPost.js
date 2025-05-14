@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const ContactPostSchema = new mongoose.Schema({
   name: String,
   email: String,
