@@ -31,7 +31,7 @@
                             <img src="<%= blogposts[i].image %>" alt="image" class="img-thumbnail mb-3" style="max-height: 200px;">
                             </a>
                             <% if (blogposts[i].username) { %>
-                                <p class="post-meta">Poster par
+                                <p class="post-meta">Posté par
                                     <a href="#"><%= blogposts[i].username %></a>
                                     le <%= blogposts[i].datePosted.toLocaleDateString('fr-FR', {
                                     weekday: 'long',

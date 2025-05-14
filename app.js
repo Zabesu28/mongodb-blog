@@ -6,7 +6,8 @@ const fileUpload = require('express-fileupload');
 const app = express();
 const flash = require('connect-flash');
 const session = require('express-session');
-
+const authMiddleware = require('./src/middleware/authMiddleware')
+const validateMiddleware = require('./src/middleware/validateMiddleware')
 
 //  DATABASE CONNECTION 
 require('./config/db'); 
@@ -19,14 +20,15 @@ app.use(fileUpload());
 app.use(session({
   secret: 'tonsecret',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     maxAge: 1000 * 60 * 60,
-    httpOnly: false, // change to true for security purpose
+    httpOnly: true,
     secure: false
    }
 }));
 app.use(flash());
+// Variables injectées dans les templates ejs
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success');
   res.locals.error_msg = req.flash('error');
@@ -37,14 +39,6 @@ app.use((req, res, next) => {
 //  VIEW ENGINE 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-//  MIDDLEWARE validation
-const validateMiddleware = (req, res, next) => {
-    if (!req.files || !req.files.image || !req.body.title || !req.body.body || !req.body.username) {
-        return res.redirect('/post/new');
-    }
-    next();
-};
 
 //  CONTROLLERS 
 const homeController = require('./src/controllers/listPost');
@@ -60,7 +54,7 @@ const { get } = require('http');
 // ROUTES 
 app.get('/', homeController);
 app.get('/list', listPostController);         
-app.get('/post/new', newPostController);      
+app.get('/post/new', authMiddleware, newPostController);      
 app.get('/post/:id', getPostController);      
 app.post('/posts/store', validateMiddleware, storePostController); 
 app.get('/contact', contactController);

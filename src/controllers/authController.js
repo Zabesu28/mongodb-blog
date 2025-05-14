@@ -42,8 +42,9 @@ module.exports = class AuthController {
                 req.flash('error', 'Mot de passe invalide')
                 return res.redirect('/login')
             }
-            console.log("User ", user.name, " successfully logged in")
+            console.log("User ", user.name, user.id, " successfully logged in")
             req.session.user = {
+                id: user.id,
                 name: user.name,
                 email
             }
