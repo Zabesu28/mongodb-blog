@@ -19,7 +19,12 @@ app.use(fileUpload());
 app.use(session({
   secret: 'tonsecret',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60,
+    httpOnly: true,
+    secure: false
+   }
 }));
 app.use(flash());
 app.use((req, res, next) => {
@@ -48,6 +53,7 @@ const getPostController = require('./src/controllers/getPost');
 const storePostController = require('./src/controllers/storePost');
 const contactController = require('./src/controllers/contact');
 const aboutController = require('./src/controllers/about');
+const AuthController = require('./src/controllers/authController');
 
 // ROUTES 
 app.get('/', homeController);
@@ -57,6 +63,11 @@ app.get('/post/:id', getPostController);
 app.post('/posts/store', validateMiddleware, storePostController); 
 app.get('/contact', contactController);
 app.get('/about', aboutController);
+// AUTH ROUTES
+app.get('/register', AuthController.register)
+app.post('/auth/register', AuthController.storeUser)
+app.get('/login', AuthController.login)
+app.post('/auth/login', AuthController.signInUser)
 
 app.use((req, res) => {
   res.status(404).render('notfound');
