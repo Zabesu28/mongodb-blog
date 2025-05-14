@@ -6,10 +6,11 @@ const app = express();
 const flash = require('connect-flash');
 const session = require('express-session');
 
-// ======== DATABASE CONNECTION =========
+
+//  DATABASE CONNECTION 
 require('./config/db'); 
 
-// ======== MIDDLEWARES =========
+//  MIDDLEWARES 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,11 +27,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// ======== VIEW ENGINE =========
+//  VIEW ENGINE 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ======== VALIDATION MIDDLEWARE =========
+//  MIDDLEWARE validation
 const validateMiddleware = (req, res, next) => {
     if (!req.files || !req.files.image || !req.body.title || !req.body.body || !req.body.username) {
         return res.redirect('/post/new');
@@ -38,22 +39,25 @@ const validateMiddleware = (req, res, next) => {
     next();
 };
 
-// ======== CONTROLLERS =========
+//  CONTROLLERS 
 const homeController = require('./src/controllers/listPost');
 const listPostController = require('./src/controllers/listPost');
 const newPostController = require('./src/controllers/newPost');
 const getPostController = require('./src/controllers/getPost');
 const storePostController = require('./src/controllers/storePost');
+const contactController = require('./src/controllers/contact');
+const aboutController = require('./src/controllers/about');
 
-// ======== ROUTES =========
+// ROUTES 
 app.get('/', homeController);
 app.get('/list', listPostController);         
 app.get('/post/new', newPostController);      
 app.get('/post/:id', getPostController);      
 app.post('/posts/store', validateMiddleware, storePostController); 
+app.get('/contact', contactController);
+app.get('/about', aboutController);
 
-
-// ======== SERVEUR =========
+//  SERVEUR 
 const PORT = 4000;
 app.listen(PORT, () => {
     console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
