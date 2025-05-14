@@ -22,7 +22,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     maxAge: 1000 * 60 * 60,
-    httpOnly: true,
+    httpOnly: false, // change to true for security purpose
     secure: false
    }
 }));
@@ -30,6 +30,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success');
   res.locals.error_msg = req.flash('error');
+  res.locals.user = (req?.session && req.session.user) ?? null;
   next();
 });
 
@@ -54,6 +55,7 @@ const storePostController = require('./src/controllers/storePost');
 const contactController = require('./src/controllers/contact');
 const aboutController = require('./src/controllers/about');
 const AuthController = require('./src/controllers/authController');
+const { get } = require('http');
 
 // ROUTES 
 app.get('/', homeController);
@@ -68,6 +70,7 @@ app.get('/register', AuthController.register)
 app.post('/auth/register', AuthController.storeUser)
 app.get('/login', AuthController.login)
 app.post('/auth/login', AuthController.signInUser)
+app.get('/auth/logout', AuthController.logoutUser)
 
 app.use((req, res) => {
   res.status(404).render('notfound');

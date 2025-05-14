@@ -11,10 +11,16 @@
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/list">Accueil</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/about">About</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/contact">Contact</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/post/new">Créer article</a></li>
+                        <%  if(user) {%>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/post/new">Créer article</a></li>
+                        <%} %>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/list">Tous les articles</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/register">Inscription</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/login">Connexion</a></li>
+                        <%  if(!user) {%>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/register">Inscription</a></li>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/login">Connexion</a></li>
+                        <%} else {%>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/auth/logout">Déconnexion</a></li>
+                        <%}%>
                     </ul>
                 </div>
             </div>

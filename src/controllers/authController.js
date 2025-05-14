@@ -43,10 +43,19 @@ module.exports = class AuthController {
                 return res.redirect('/login')
             }
             console.log("User ", user.name, " successfully logged in")
+            req.session.user = {
+                name: user.name,
+                email
+            }
             res.redirect('/list')
         } catch (error) {
             console.log("Error trying to sign in user ", email, error)
         }
 
+    }
+
+    static logoutUser(req, res){
+        req.session.user = null;
+        res.redirect('/login')
     }
 }
