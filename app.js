@@ -57,6 +57,10 @@ app.post('/posts/store', validateMiddleware, storePostController);
 app.get('/contact', contactController);
 app.get('/about', aboutController);
 
+app.use((req, res) => {
+  res.status(404).render('notfound');
+});
+
 //  SERVEUR 
 const PORT = 4000;
 app.listen(PORT, () => {
